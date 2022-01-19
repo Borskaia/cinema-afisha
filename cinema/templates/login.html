@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+  <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+</head>
+<body link="#2f4f4f" vlink="#000000" alink="#191970" bgcolor="black">
+
+
+   <nav class="navbar navbar-expand-lg navbar-blue" style="background-color:#e3f2fd;">
+   <div class="container">
+      <header class="d-flex justify-content-center py-3">
+         <div class="navbar-nav">
+         {% if session['isAdmin'] %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.admin') }}">Страница администратора</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.profile') }}">Профиль</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.logout') }}">Выход</a>
+          {% elif session['logged_in'] %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.profile') }}">Профиль</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.logout') }}">Выход</a>
+          {% else %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.register') }}">Регистрация</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.login') }}">Вход</a>
+          {% endif %}
+          </div>
+
+      </header>
+    </div>
+
+    </nav><br>
+    <h2 style=position:absolute;left:8%;>Авторизация</h2><br><br><br>
+
+    <form class="form-login" action="{{ url_for('auth.login') }}" method="post" style=position:absolute;left:8%;>
+        <input type="text" class="form-login" name="login" placeholder="Логин" id="login" required>
+        <label>Логин/Телефон</label><br>
+        <input type="password" class = "form-password" name="user_password" placeholder="Пароль" id="user_password" required>
+        <label>Пароль</label><br><br>
+        <input type="checkbox" value="checked"><b>Запомнить</b><br><br>
+        <input type="submit" value="Войти" class="form-submit" name=""><br>
+        <br>
+        <a href="{{ url_for('auth.register') }}">РЕГИСТРАЦИЯ</a><br>
+        <a href="{{ url_for('view.home') }}">ГЛАВНАЯ</a>
+    </form>
+
+   {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+
+</body>
+</html>

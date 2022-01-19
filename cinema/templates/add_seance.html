@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавление сеанса</title>
+      <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+
+</head>
+<body>
+
+   <nav class="navbar navbar-expand-lg navbar-blue" style="background-color:#e3f2fd;">
+   <div class="container">
+      <header class="d-flex justify-content-center py-3">
+         <div class="navbar-nav">
+          {% if session['isAdmin'] %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.admin') }}">Страница администратора</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.profile') }}">Профиль</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.logout') }}">Выход</a>
+          {% elif session['logged_in'] %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.profile') }}">Профиль</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.logout') }}">Выход</a>
+          {% else %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.register') }}">Регистрация</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.login') }}">Вход</a>
+          {% endif %}
+          </div>
+      </header>
+    </div>
+    </nav><br>
+
+   {% if session['isAdmin'] %}
+    <h2 style=position:absolute;left:8%;>Добавление сеанса</h2><br><br>
+
+       {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul style=position:absolute;left:8%;>
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+
+    <br><br>
+    <form class="form-add_film" action="{{ url_for('view.add_seance') }}" method="post" style=position:absolute;left:8%;>
+
+        <select style=width:190px; name="option_title">
+        <option value="0">Фильм</option>
+        {% for key, value in title_dict.items() %}
+        <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+        </select>
+        <label>Фильм</label><br>
+
+        <select style=width:190px; name="option_hall">
+        <option value="0">Зал</option>
+        {% for key, value in hall_dict.items() %}
+        <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+        </select>
+        <label>Зал</label><br>
+
+        <input type="date"  class="form-date" id="date" name="date" style=width:190px; required>
+        <label>Дата</label><br>
+
+        <input type="time" class = "form-time" name="time" style=width:190px; id="time" required>
+        <label>Время</label><br>
+
+        <input type="text" class = "form-add_film" name="ticket_cost" placeholder="Стоимость" id="ticket_cost" required>
+        <label>Стоимость</label><br>
+
+        <br>
+        <input type="submit" value="Добавить" class="form-submit" name=""><br>
+        <br>
+
+
+        <a href="{{ url_for('view.admin') }}">Страница админа</a>
+    </form>
+    {% else %}
+    <p>У вас нет доступа к этой странице.</p>
+    {% endif %}
+
+</body>
+</html>

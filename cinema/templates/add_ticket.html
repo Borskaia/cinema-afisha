@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Покупка билета</title>
+      <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+
+</head>
+<body>
+
+   <nav class="navbar navbar-expand-lg navbar-blue" style="background-color:#e3f2fd;">
+   <div class="container">
+      <header class="d-flex justify-content-center py-3">
+         <div class="navbar-nav">
+         {% if session['isAdmin'] %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.admin') }}">Страница администратора</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.profile') }}">Профиль</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.logout') }}">Выход</a>
+          {% elif session['logged_in'] %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.profile') }}">Профиль</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.logout') }}">Выход</a>
+          {% else %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.register') }}">Регистрация</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.login') }}">Вход</a>
+          {% endif %}
+          </div>
+      </header>
+    </div>
+    </nav><br>
+
+   {% if session['logged_in'] %}
+    <h2 style=position:absolute;left:8%;>Покупка билета</h2><br><br>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul style=position:absolute;left:8%;>
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+
+    <br><br>
+    <form class="form-add_film" action="{{ url_for('view.add_ticket') }}" method="post" style=position:absolute;left:8%;>
+
+        <select style=width:190px; name="option_title">
+        <option value="0">Фильм</option>
+        {% for key, value in title_dict.items() %}
+        <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+        </select>
+        <label>Фильм</label><br>
+
+        <select style=width:190px; name="option_date">
+        <option value="0">Дата</option>
+        {% for key, value in seance_date_dict.items() %}
+        <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+        </select>
+        <label>Дата</label><br>
+
+        <select style=width:190px; name="option_time">
+        <option value="0">Время</option>
+        {% for key, value in seance_time_dict.items() %}
+        <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+        </select>
+        <label>Время</label><br>
+
+        <select style=width:190px; name="option_hall">
+        <option value="0">Зал</option>
+        {% for key, value in seance_hall_dict.items() %}
+        <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+        </select>
+        <label>Зал</label><br>
+
+
+<!--            <p  class="lead font-weight-normal">Фильм: {{ seance.film_id}}</p>-->
+<!--            <p  class="lead font-weight-normal">Зал: {{ seance.hall}}</p>-->
+<!--            <p  class="lead font-weight-normal">Дата: {{ seance.seance_date}}</p>-->
+<!--            <p  class="lead font-weight-normal">Время: {{ seance.seance_time}}</p><br>-->
+<!--            <p  class="lead font-weight-normal">Стоимость: {{ seance.ticket_cost}}</p><br>-->
+
+            <select style=width:190px; name="option_row">
+            <option value="0">Ряд</option>
+            {% for i in range(row_num) %}
+            <option value="{{ i+1 }}">{{ i+1 }}</option>
+            {% endfor %}
+            </select>
+            <label>Ряд</label><br>
+
+            <select style=width:190px; name="option_place">
+            <option value="0">Место</option>
+            {% for i in range(place_num) %}
+            <option value="{{ i+1 }}">{{ i+1 }}</option>
+            {% endfor %}
+            </select>
+            <label>Место</label><br>
+
+        <br>
+        <input type="submit" value="Купить" class="form-submit" name=""><br>
+        <br>
+
+    </form>
+
+    {% else %}
+    <p>Для покупки билетов необходимо авторизоваться.</p>
+
+    {% endif %}
+
+</body>
+</html>

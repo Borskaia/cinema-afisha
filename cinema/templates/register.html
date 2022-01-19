@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+  <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+</head>
+<body link="#2f4f4f" vlink="#000000" alink="#191970" bgcolor="black">
+
+
+   <nav class="navbar navbar-expand-lg navbar-blue" style="background-color:#e3f2fd;">
+   <div class="container">
+      <header class="d-flex justify-content-center py-3">
+         <div class="navbar-nav">
+         {% if session['isAdmin'] %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.admin') }}">Страница администратора</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.profile') }}">Профиль</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.logout') }}">Выход</a>
+          {% elif session['logged_in'] %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.profile') }}">Профиль</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.logout') }}">Выход</a>
+          {% else %}
+          <a class="nav-item nav-link"  href="{{ url_for('view.home') }}">Главная</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.afisha') }}">Афиша</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.seance') }}">Расписание</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.add_ticket') }}">Купить билет</a>
+          <a class="nav-item nav-link"  href="{{ url_for('view.cinema') }}">О кинотеатре</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.register') }}">Регистрация</a>
+          <a class="nav-item nav-link"  href="{{ url_for('auth.login') }}">Вход</a>
+          {% endif %}
+          </div>
+
+      </header>
+    </div>
+
+    </nav><br>
+
+    <h2 style=position:absolute;left:8%;>Регистрация</h2><br><br><br>
+    <form class="form-register" style=position:absolute;left:8%; action="{{ url_for('auth.register') }}" method="post">
+        <input type="text" class="form-login" name="login" placeholder="Телефон" id="login" required>
+        <label>Телефон</label><br>
+        <input type="password" class = "form-password" name="user_password" placeholder="Пароль" id="user_password" required>
+        <label>Пароль</label><br>
+        <input type="text" class="form-user_name" name="user_name" placeholder="Имя" id="user_name" required>
+        <label>Имя</label><br>
+        <input type="date"  class="form-date" id="date" name="date" style=width:190px;/>
+        <label for="date">Дата рождения </label><br><br>
+        <input type="submit" value="Регистрация" class="form-submit" name=""><br><br>
+        <a href="{{ url_for('auth.login') }}">АВТОРИЗАЦИЯ</a> <br>
+        <a href="{{ url_for('view.home') }}">ГЛАВНАЯ</a>
+    </form>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% block body %}{% endblock %}
+
+</body>
+</html>
