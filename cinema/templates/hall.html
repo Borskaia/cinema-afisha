@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Админ</title>
+    <title>Зал</title>
   <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -50,17 +50,30 @@
 
     </nav><br>
 
-<center><h1 style="text-transform:uppercase">Кинотеатр "Хогвартс"</h1>
-    {% if session['isAdmin'] %}
-    <p>Здесь вы имеете возможность добавлять, просматривать, редактировать и удалять данные о фильмах, расписании и акциях</p>
-     <a href="{{ url_for('view.add_film') }}">Добавить фильм</a><br>
-     <a href="{{ url_for('view.del_film') }}">Удалить фильм</a><br>
-     <a href="{{ url_for('view.add_seance') }}">Добавить сеанс</a><br>
-     <a href="{{ url_for('view.add_hall') }}">Добавить зал</a><br>
-     <a href="{{ url_for('view.del_hall') }}">Удалить зал</a>
-    {% else %}
-    <p>У вас нет доступа к этой странице.</p>
-    {% endif %}
+<center>
+
+     <h3 class="display-4 font-weight-normal">Залы кинотеатра</h3><br>
+     <table class="table table-striped" style="width: 90%; margin: 0 auto;">
+            <thead class="thead-dark">
+                <tr align="center" >
+                    <th scope="col">Номер</th>
+                    <th scope="col">Количество мест</th>
+                    <th scope="col">Количество рядов</th>
+                    <th scope="col">Количество мест</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in range(hall_len) %}
+                <tr>
+                    <td class="table-primary" align="center">{{ hall_inf[i][0] }}</td>
+                    <td align="center">{{ hall_inf[i][1] }}</td>
+                    <td align="center">{{ hall_inf[i][2] }}</td>
+                    <td align="center">{{ hall_inf[i][3] }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -73,7 +86,6 @@
     {% endwith %}
 
 </center>
-
 </body>
 </html>
 

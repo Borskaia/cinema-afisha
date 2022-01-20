@@ -53,6 +53,18 @@ def cinema():
     return render_template('cinema.html')
 
 
+@view.route('/hall')
+def hall():
+    conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    cursor.execute('SELECT * FROM hall')
+    hall_inf = cursor.fetchall()
+    hall_len = len(hall_inf)
+
+    return render_template('hall.html', hall_inf=hall_inf, hall_len=hall_len)
+
+
 @view.route('/admin', methods=['GET', 'POST'])
 def admin():
     return render_template('admin.html')
