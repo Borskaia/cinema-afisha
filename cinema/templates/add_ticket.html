@@ -97,12 +97,6 @@
         <label>Зал</label><br>
 
 
-<!--            <p  class="lead font-weight-normal">Фильм: {{ seance.film_id}}</p>-->
-<!--            <p  class="lead font-weight-normal">Зал: {{ seance.hall}}</p>-->
-<!--            <p  class="lead font-weight-normal">Дата: {{ seance.seance_date}}</p>-->
-<!--            <p  class="lead font-weight-normal">Время: {{ seance.seance_time}}</p><br>-->
-<!--            <p  class="lead font-weight-normal">Стоимость: {{ seance.ticket_cost}}</p><br>-->
-
             <select style=width:190px; name="option_row">
             <option value="0">Ряд</option>
             {% for i in range(row_num) %}
@@ -126,7 +120,7 @@
     </form>
 
     {% else %}
-    <p>Для покупки билетов необходимо авторизоваться.</p>
+    <p style=position:absolute;left:8%;>Для покупки билетов необходимо авторизоваться.</p>
 
     {% endif %}
 

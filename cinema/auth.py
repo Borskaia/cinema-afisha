@@ -16,6 +16,7 @@ def register():
 
     if request.method == "POST" and 'login' in request.form:
         user_password = request.form['user_password']
+        user_password1 = request.form['user_password1']
         user_name = request.form['user_name']
         login = request.form['login']
         date_of_birth = request.form['date']
@@ -32,6 +33,8 @@ def register():
             flash('Аккаунт уже существует')
         elif not user_password:
             flash('Заполните все формы!')
+        elif user_password != user_password1:
+            flash('Пароли не совпадают')
         else:
 
             # Account doesn't exist and the form data is valid, now insert new account into users table

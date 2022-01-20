@@ -65,6 +65,65 @@ def hall():
     return render_template('hall.html', hall_inf=hall_inf, hall_len=hall_len)
 
 
+@view.route('/akzii')
+def akzii():
+    conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    cursor.execute('SELECT * FROM akzii')
+    akzii = cursor.fetchall()
+    akzii_len = len(akzii)
+
+    return render_template('akzii.html', akzii=akzii, akzii_len=akzii_len)
+
+
+@view.route('/add_akzii', methods=['GET', 'POST'])
+def add_akzii():
+    conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    if request.method == "POST":
+        name = request.form['name']
+        discription = request.form['discription']
+
+        cursor.execute(
+            "INSERT INTO akzii (name, discription) VALUES (%s,%s)", (name, discription, ))
+        conn.commit()
+        flash('Информация об акции добавлена')
+
+    return render_template('add_akzii.html')
+
+
+@view.route('/del_akzii', methods=['GET', 'POST'])
+def del_akzii():
+    if 'logged_in' not in session:
+        redirect(url_for('home'))
+
+    conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    cursor.execute("SELECT name FROM akzii")
+    akzii = cursor.fetchall()
+    hakzii_len = len(akzii)
+    akzii_dict = {}
+    for i in range(hakzii_len):
+        akzii_dict[i + 1] = akzii[i][0]
+
+    if request.method == 'POST':
+        if request.form['option_delete'] == '0':
+            pass
+        else:
+            option_delete = request.form['option_delete']
+            option_delete_value = akzii_dict[int(option_delete)]
+            cursor.execute("DELETE FROM akzii WHERE name =%s", (option_delete_value,))
+            conn.commit()
+
+            flash('Акция удалена')
+
+        return redirect(url_for('view.del_akzii'))
+    return render_template("del_akzii.html", akzii_dict=akzii_dict)
+
+
 @view.route('/admin', methods=['GET', 'POST'])
 def admin():
     return render_template('admin.html')
@@ -273,7 +332,6 @@ def seance():
 
 @view.route('/add_ticket', methods=['GET', 'POST'])
 def add_ticket():
-    session.pop('ticket', None)
     conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host)
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
@@ -366,3 +424,75 @@ def add_ticket():
     return render_template('add_ticket.html', title_dict=title_dict, seance_date_dict=seance_date_dict,
                            seance_time_dict=seance_time_dict, seance_hall_dict=seance_hall_dict, seance=seance,
                            row_num=row_num, place_num=place_num)
+
+
+@view.route('/del_seance', methods=['GET', 'POST'])
+def del_seance():
+    conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    cursor.execute("SELECT title FROM film WHERE id IN (SELECT film_id FROM seance)")
+    title = cursor.fetchall()
+    title_len = len(title)
+    title_dict = {}
+    for i in range(title_len):
+        title_dict[i+1] = title[i][0]
+
+    cursor.execute("SELECT DISTINCT seance_date FROM seance")
+    seance_date = cursor.fetchall()
+    seance_date_len = len(seance_date)
+    seance_date_dict = {}
+    for i in range(seance_date_len):
+        seance_date_dict[i + 1] = seance_date[i][0]
+
+    cursor.execute("SELECT DISTINCT seance_time FROM seance")
+    seance_time = cursor.fetchall()
+    seance_time_len = len(seance_time)
+    seance_time_dict = {}
+    for i in range(seance_time_len):
+        seance_time_dict[i + 1] = seance_time[i][0]
+
+    cursor.execute("SELECT id FROM hall WHERE id in (SELECT hall FROM seance)")
+    seance_hall = cursor.fetchall()
+    seance_hall_len = len(seance_hall)
+    seance_hall_dict = {}
+    for i in range(seance_hall_len):
+        seance_hall_dict[i + 1] = seance_hall[i][0]
+
+    if request.method == "POST":
+        title = request.form['option_title']
+        date = request.form['option_date']
+        time = request.form['option_time']
+        hall = request.form['option_hall']
+
+        title_value = title_dict[int(title)]
+        cursor.execute("SELECT id FROM film WHERE title =%s", (title_value,))
+        film_id = cursor.fetchall()
+        film_id = film_id[0]
+        print(film_id)
+        date_value = seance_date_dict[int(date)]
+        time_value = seance_time_dict[int(time)]
+        print(date_value)
+        print(time_value)
+        hall_value = seance_hall_dict[int(hall)]
+
+        cursor.execute('SELECT * FROM seance WHERE (film_id = %s and hall = %s and seance_date = %s and'
+                       ' seance_time = %s)', (film_id[0], hall_value, date_value, time_value))
+        seance = cursor.fetchone()
+        print(seance)
+
+        if seance:
+            seance_id = seance[0]
+            print(seance_id)
+            cursor.execute('DELETE FROM ticket WHERE seance_id = %s', (seance_id,))
+            conn.commit()
+            cursor.execute('DELETE FROM seance WHERE (film_id = %s and hall = %s and seance_date = %s and'
+                           ' seance_time = %s)', (film_id[0], hall_value, date_value, time_value))
+            conn.commit()
+            flash('Вы успешно удалили сеанс!')
+
+        else:
+            flash('Такого сеанса не существует, проверьте корректность введенных данных')
+
+    return render_template('del_seance.html', title_dict=title_dict, seance_date_dict=seance_date_dict,
+                           seance_time_dict=seance_time_dict, seance_hall_dict=seance_hall_dict)

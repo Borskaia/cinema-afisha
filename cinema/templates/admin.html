@@ -56,8 +56,11 @@
      <a href="{{ url_for('view.add_film') }}">Добавить фильм</a><br>
      <a href="{{ url_for('view.del_film') }}">Удалить фильм</a><br>
      <a href="{{ url_for('view.add_seance') }}">Добавить сеанс</a><br>
+     <a href="{{ url_for('view.del_seance') }}">Удалить сеанс</a><br>
      <a href="{{ url_for('view.add_hall') }}">Добавить зал</a><br>
-     <a href="{{ url_for('view.del_hall') }}">Удалить зал</a>
+     <a href="{{ url_for('view.del_hall') }}">Удалить зал</a><br>
+     <a href="{{ url_for('view.add_akzii') }}">Добавить информацию об акциях</a><br>
+     <a href="{{ url_for('view.del_akzii') }}">Удалить информацию об акциях</a>
     {% else %}
     <p>У вас нет доступа к этой странице.</p>
     {% endif %}

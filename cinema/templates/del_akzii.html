@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Вход</title>
-  <link
+    <title>Удаление акции</title>
+      <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
       crossorigin="anonymous"
     />
-</head>
-<body link="#2f4f4f" vlink="#000000" alink="#191970" bgcolor="black">
 
+</head>
+<body>
 
    <nav class="navbar navbar-expand-lg navbar-blue" style="background-color:#e3f2fd;">
    <div class="container">
@@ -44,35 +44,41 @@
           <a class="nav-item nav-link"  href="{{ url_for('auth.login') }}">Вход</a>
           {% endif %}
           </div>
-
       </header>
     </div>
-
     </nav><br>
-    <h2 style=position:absolute;left:8%;>Авторизация</h2><br><br>
-        {% with messages = get_flashed_messages() %}
+
+   {% if session['isAdmin'] %}
+    <h2 style=position:absolute;left:8%;>Удаление акции</h2><br><br>
+
+   {% with messages = get_flashed_messages() %}
     {% if messages %}
-        <ul >
+        <ul style=position:absolute;left:8%;>
             {% for message in messages %}
             <p>{{ message }}</p>
             {% endfor %}
         </ul>
     {% endif %}
     {% endwith %}
-    <br>
 
-    <form class="form-login" action="{{ url_for('auth.login') }}" method="post" style=position:absolute;left:8%;>
-        <input type="text" class="form-login" name="login" placeholder="Логин" id="login" required>
-        <label>Логин/Телефон</label><br>
-        <input type="password" class = "form-password" name="user_password" placeholder="Пароль" id="user_password" required>
-        <label>Пароль</label><br><br>
-        <input type="checkbox" value="checked"><b>Запомнить</b><br><br>
-        <input type="submit" value="Войти" class="form-submit" name=""><br>
+    <br><br>
+    <form class="form-add_film" action="{{ url_for('view.del_akzii') }}" method="post" style=position:absolute;left:8%;>
+        <select style=width:190px; name="option_delete">
+        <option value="0">-нет-</option>
+        {% for key, value in akzii_dict.items() %}
+        <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+        </select>
+        <br><br>
+        <input type="submit" value="Удалить" class="form-submit" name=""><br>
         <br>
-        <a href="{{ url_for('auth.register') }}">РЕГИСТРАЦИЯ</a><br>
-        <a href="{{ url_for('view.home') }}">ГЛАВНАЯ</a>
+
+        <a href="{{ url_for('view.admin') }}">Страница админа</a>
     </form>
 
+   {% else %}
+    <p>У вас нет доступа к этой странице.</p>
+    {% endif %}
 
 </body>
 </html>

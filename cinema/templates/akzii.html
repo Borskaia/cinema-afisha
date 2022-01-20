@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Вход</title>
-  <link
+
+   <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
       crossorigin="anonymous"
     />
+<!--      rel="stylesheet"-->
+<!--      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"-->
+<!--      crossorigin="anonymous"-->
+<!--    />-->
+    <title>Акции</title>
 </head>
-<body link="#2f4f4f" vlink="#000000" alink="#191970" bgcolor="black">
+<body>
 
 
    <nav class="navbar navbar-expand-lg navbar-blue" style="background-color:#e3f2fd;">
@@ -49,30 +54,40 @@
     </div>
 
     </nav><br>
-    <h2 style=position:absolute;left:8%;>Авторизация</h2><br><br>
-        {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul >
-            {% for message in messages %}
-            <p>{{ message }}</p>
+
+
+
+<center><h1 style="text-transform:uppercase">Акции</h1>
+
+</center>
+{% if akzii_len == 0 %}
+
+ <p style=position:absolute;left:8%;>Сейчас в нашем кинотеатре нет действующих акций</p>
+
+ {% else %}
+
+      <table class="table table-sm table-striped" style="width: 90%; margin: 0 auto;">
+            <thead class="thead-dark">
+                <tr align="center" >
+                    <th scope="col">№</th>
+                    <th scope="col">Название акции</th>
+                    <th scope="col">Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in range(akzii_len) %}
+                <tr>
+                    <td class="table-primary" style="width:120px;" align="center">{{ akzii[i][0] }}</td>
+                    <td align="center">{{ akzii[i][1] }}</td>
+                    <td align="center">{{ akzii[i][2] }}</td>
+                </tr>
             {% endfor %}
-        </ul>
-    {% endif %}
-    {% endwith %}
-    <br>
+            </tbody>
+        </table>
 
-    <form class="form-login" action="{{ url_for('auth.login') }}" method="post" style=position:absolute;left:8%;>
-        <input type="text" class="form-login" name="login" placeholder="Логин" id="login" required>
-        <label>Логин/Телефон</label><br>
-        <input type="password" class = "form-password" name="user_password" placeholder="Пароль" id="user_password" required>
-        <label>Пароль</label><br><br>
-        <input type="checkbox" value="checked"><b>Запомнить</b><br><br>
-        <input type="submit" value="Войти" class="form-submit" name=""><br>
-        <br>
-        <a href="{{ url_for('auth.register') }}">РЕГИСТРАЦИЯ</a><br>
-        <a href="{{ url_for('view.home') }}">ГЛАВНАЯ</a>
-    </form>
-
+ {% endif %}
 
 </body>
 </html>
+
+
