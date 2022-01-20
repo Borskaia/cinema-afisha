@@ -104,6 +104,12 @@ def login():
 def logout():
     session.pop('logged_in', None)
     session.pop('isAdmin', None)
-    session.pop('ticket', None)
+    session.pop('seance_id', None)
+    session.pop('ticket_cost', None)
+    session.pop('user_id', None)
+    session.pop('title', None)
+    session.pop('date', None)
+    session.pop('time', None)
+    session.pop('hall', None)
     flash('Вы успешно вышли из аккаунта')
     return redirect(url_for('view.home'))
