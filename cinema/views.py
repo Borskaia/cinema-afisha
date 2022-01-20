@@ -199,14 +199,20 @@ def del_film():
             option_delete_value = film_dict[int(option_delete)]
             cursor.execute("SELECT id FROM film WHERE title =%s", (option_delete_value,))
             film_id = cursor.fetchall()
-            cursor.execute("DELETE FROM film_genre WHERE film_id =%s", film_id[0])
-            conn.commit()
-            cursor.execute("DELETE FROM film WHERE title =%s", (option_delete_value,))
-            conn.commit()
+            cursor.execute("SELECT film_id FROM seance WHERE film_id =%s", film_id[0])
+            seance = cursor.fetchall()
 
-            flash('Фильм удален')
+            if seance:
+                flash('Нельзя удалить фильм, пока он в прокате')
+            else:
+                cursor.execute("DELETE FROM film_genre WHERE film_id =%s", film_id[0])
+                conn.commit()
+                cursor.execute("DELETE FROM film WHERE title =%s", (option_delete_value,))
+                conn.commit()
 
-        return redirect(url_for('view.del_film'))
+                flash('Фильм удален')
+
+            return redirect(url_for('view.del_film'))
     return render_template("del_film.html", film_dict=film_dict)
 
 
@@ -231,12 +237,19 @@ def del_hall():
         else:
             option_delete = request.form['option_delete']
             option_delete_value = hall_id_dict[int(option_delete)]
-            cursor.execute("DELETE FROM hall WHERE id =%s", (option_delete_value,))
-            conn.commit()
 
-            flash('Зал удален')
+            cursor.execute("SELECT hall FROM seance WHERE hall =%s", (option_delete_value,))
+            hall = cursor.fetchall()
 
-        return redirect(url_for('view.del_hall'))
+            if hall:
+                flash('Нельзя удалить зал, пока там идут сеансы')
+            else:
+                cursor.execute("DELETE FROM hall WHERE id =%s", (option_delete_value,))
+                conn.commit()
+
+                flash('Зал удален')
+
+            return redirect(url_for('view.del_hall'))
     return render_template("del_hall.html", hall_id_dict=hall_id_dict)
 
 
