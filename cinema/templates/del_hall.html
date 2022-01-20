@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Админ</title>
-  <link
+    <title>Удаление зала</title>
+      <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
       crossorigin="anonymous"
     />
-</head>
-<body link="#2f4f4f" vlink="#000000" alink="#191970" bgcolor="black">
 
+</head>
+<body>
 
    <nav class="navbar navbar-expand-lg navbar-blue" style="background-color:#e3f2fd;">
    <div class="container">
@@ -44,27 +44,16 @@
           <a class="nav-item nav-link"  href="{{ url_for('auth.login') }}">Вход</a>
           {% endif %}
           </div>
-
       </header>
     </div>
-
     </nav><br>
 
-<center><h1 style="text-transform:uppercase">Кинотеатр "Хогвартс"</h1>
-    {% if session['isAdmin'] %}
-    <p>Здесь вы имеете возможность добавлять, просматривать, редактировать и удалять данные о фильмах, расписании и акциях</p>
-     <a href="{{ url_for('view.add_film') }}">Добавить фильм</a><br>
-     <a href="{{ url_for('view.del_film') }}">Удалить фильм</a><br>
-     <a href="{{ url_for('view.add_seance') }}">Добавить сеанс</a><br>
-     <a href="{{ url_for('view.add_hall') }}">Добавить зал</a>
-     <a href="{{ url_for('view.del_hall') }}">Удалить зал</a>
-    {% else %}
-    <p>У вас нет доступа к этой странице.</p>
-    {% endif %}
+   {% if session['isAdmin'] %}
+    <h2 style=position:absolute;left:8%;>Удаление зала</h2><br><br>
 
-    {% with messages = get_flashed_messages() %}
+   {% with messages = get_flashed_messages() %}
     {% if messages %}
-        <ul>
+        <ul style=position:absolute;left:8%;>
             {% for message in messages %}
             <p>{{ message }}</p>
             {% endfor %}
@@ -72,8 +61,24 @@
     {% endif %}
     {% endwith %}
 
-</center>
+    <br><br>
+    <form class="form-add_film" action="{{ url_for('view.del_hall') }}" method="post" style=position:absolute;left:8%;>
+        <select style=width:190px; name="option_delete">
+        <option value="0">-нет-</option>
+        {% for key, value in hall_id_dict.items() %}
+        <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+        </select>
+        <br><br>
+        <input type="submit" value="Удалить" class="form-submit" name=""><br>
+        <br>
+
+        <a href="{{ url_for('view.admin') }}">Страница админа</a>
+    </form>
+
+   {% else %}
+    <p>У вас нет доступа к этой странице.</p>
+    {% endif %}
 
 </body>
 </html>
-

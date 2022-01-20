@@ -139,6 +139,36 @@ def del_film():
     return render_template("del_film.html", film_dict=film_dict)
 
 
+@view.route('/del_hall', methods=['GET', 'POST'])
+def del_hall():
+    if 'logged_in' not in session:
+        redirect(url_for('home'))
+
+    conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    cursor.execute("SELECT id FROM hall")
+    hall_id = cursor.fetchall()
+    hall_id_len = len(hall_id)
+    hall_id_dict = {}
+    for i in range(hall_id_len):
+        hall_id_dict[i + 1] = hall_id[i][0]
+
+    if request.method == 'POST':
+        if request.form['option_delete'] == '0':
+            pass
+        else:
+            option_delete = request.form['option_delete']
+            option_delete_value = hall_id_dict[int(option_delete)]
+            cursor.execute("DELETE FROM hall WHERE id =%s", (option_delete_value,))
+            conn.commit()
+
+            flash('Зал удален')
+
+        return redirect(url_for('view.del_hall'))
+    return render_template("del_hall.html", hall_id_dict=hall_id_dict)
+
+
 @view.route('/add_hall', methods=['GET', 'POST'])
 def add_hall():
     conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host)
