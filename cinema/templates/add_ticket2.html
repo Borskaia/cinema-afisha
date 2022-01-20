@@ -62,46 +62,53 @@
     {% endwith %}
 
     <br><br>
-    <form class="form-add_film" action="{{ url_for('view.add_ticket') }}" method="post" style=position:absolute;left:8%;>
+    <form class="form-add_film" action="{{ url_for('view.add_ticket2') }}" method="post" style=position:absolute;left:8%;>
+    <p  class="lead font-weight-normal">Фильм: {{ session['title'] }}</p>
+    <p  class="lead font-weight-normal">Дата: {{ session['date'] }}</p>
+    <p  class="lead font-weight-normal">Время: {{ session['time'] }}</p>
+    <p  class="lead font-weight-normal">Цена: {{ session['ticket_cost'] }}</p>
+    <p  class="lead font-weight-normal">Зал: {{ session['hall'] }}</p><br>
 
-        <select style=width:190px; name="option_title">
-        <option value="0">Фильм</option>
-        {% for key, value in title_dict.items() %}
-        <option value="{{ key }}">{{ value }}</option>
-        {% endfor %}
-        </select>
-        <label>Фильм</label><br>
+            <select style=width:190px; name="option_row">
+            <option value="0">Ряд</option>
+            {% for i in range(row_num) %}
+            <option value="{{ i+1 }}">{{ i+1 }}</option>
+            {% endfor %}
+            </select>
+            <label>Ряд</label><br>
 
-        <select style=width:190px; name="option_date">
-        <option value="0">Дата</option>
-        {% for key, value in seance_date_dict.items() %}
-        <option value="{{ key }}">{{ value }}</option>
-        {% endfor %}
-        </select>
-        <label>Дата</label><br>
-
-        <select style=width:190px; name="option_time">
-        <option value="0">Время</option>
-        {% for key, value in seance_time_dict.items() %}
-        <option value="{{ key }}">{{ value }}</option>
-        {% endfor %}
-        </select>
-        <label>Время</label><br>
-
-        <select style=width:190px; name="option_hall">
-        <option value="0">Зал</option>
-        {% for key, value in seance_hall_dict.items() %}
-        <option value="{{ key }}">{{ value }}</option>
-        {% endfor %}
-        </select>
-        <label>Зал</label><br>
-
+            <select style=width:190px; name="option_place">
+            <option value="0">Место</option>
+            {% for i in range(place_num) %}
+            <option value="{{ i+1 }}">{{ i+1 }}</option>
+            {% endfor %}
+            </select>
+            <label>Место</label><br>
 
         <br>
         <input type="submit" value="Купить" class="form-submit" name=""><br>
         <br>
 
     </form>
+
+   <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+ <p style=position:absolute;left:8%;>Занятые места</p><br>
+   <table class="table table-sm table-striped" style="width: 90%; margin: 0 auto;">
+            <thead class="thead-dark">
+                <tr align="center" >
+                    <th scope="col">Ряд</th>
+                    <th scope="col">Место</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in range(zplace_len) %}
+                <tr>
+                    <td align="center">{{ zplace[i][0] }}</td>
+                    <td align="center">{{ zplace[i][1] }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
     {% else %}
     <p style=position:absolute;left:8%;>Для покупки билетов необходимо авторизоваться.</p>

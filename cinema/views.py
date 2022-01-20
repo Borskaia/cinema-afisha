@@ -379,21 +379,12 @@ def add_ticket():
     for i in range(seance_hall_len):
         seance_hall_dict[i + 1] = seance_hall[i][0]
 
-    cursor.execute('SELECT DISTINCT MAX(row_num), MAX(place_num) FROM hall')
-    place = cursor.fetchone()
-    row_num = place[0]
-    place_num = place[1]
-    print(row_num, place_num)
-
     if request.method == "POST":
+        session.pop('seance_id', None)
         title = request.form['option_title']
         date = request.form['option_date']
         time = request.form['option_time']
         hall = request.form['option_hall']
-        row = request.form['option_row']
-        place = request.form['option_place']
-        print('row', row)
-        print('place', place)
 
         title_value = title_dict[int(title)]
         cursor.execute("SELECT id FROM film WHERE title =%s", (title_value,))
@@ -402,6 +393,7 @@ def add_ticket():
         print(film_id)
         date_value = seance_date_dict[int(date)]
         time_value = seance_time_dict[int(time)]
+        time_value_str = str(time_value)
         print(date_value)
         print(time_value)
         hall_value = seance_hall_dict[int(hall)]
@@ -413,69 +405,110 @@ def add_ticket():
         print(seance)
 
         if seance:
-            cursor.execute('SELECT row_num, place_num FROM hall WHERE (id = %s )', (hall_value,))
-            place_row = cursor.fetchone()
-            row_num1 = place_row[0]
-            place_num1 = place_row[1]
-            print(row_num1)
-            print(place_num1)
-
-            if (row_num1 < int(row)) and (place_num1 < int(place)):
-                flash('Такого места в зале нет, проверьте корректность введенных данных')
-
-            else:
-                seance_id = seance[0]
-                print(seance_id)
-                cursor.execute('SELECT row FROM ticket WHERE seance_id = %s', (seance_id,))
-                seance_row = cursor.fetchone()
-                print("row",seance_row)
-                cursor.execute('SELECT place FROM ticket WHERE seance_id = %s', (seance_id,))
-                seance_place = cursor.fetchone()
-                print("place", seance_place)
-
-                if (seance_row is None and seance_place is None) or (seance_row is not None and seance_place is None)\
-                        or (seance_row is None and seance_place is not None):
-                    seance_row_x = 0
-                    seance_place_x = 0
-                    cursor.execute('SELECT id FROM cinema_user WHERE login = %s', [session['login']])
-                    user_id = cursor.fetchone()
-                    print(user_id)
-                    cursor.execute('SELECT ticket_cost FROM seance WHERE id = %s', (seance_id,))
-                    ticket_cost = cursor.fetchone()
-                    print(ticket_cost)
-                    cursor.execute(
-                        'INSERT INTO ticket (seance_id, place, ticket_cost, user_id, row) VALUES (%s,%s,%s,%s,'
-                        '%s)', (seance_id, place, ticket_cost[0], user_id[0], row))
-                    conn.commit()
-                    flash('Вы успешно приобрели билет!')
-
-                else:
-                    seance_row_x = seance_row.count(int(row))
-                    seance_place_x = seance_place.count(int(place))
-                    print(seance_place_x, seance_row_x)
-
-                    if seance_row_x == 0 and seance_place_x == 0:
-                        cursor.execute('SELECT id FROM cinema_user WHERE login = %s', [session['login']])
-                        user_id = cursor.fetchone()
-                        print(user_id)
-                        cursor.execute('SELECT ticket_cost FROM seance WHERE id = %s', (seance_id,))
-                        ticket_cost = cursor.fetchone()
-                        print(ticket_cost)
-                        cursor.execute(
-                            'INSERT INTO ticket (seance_id, place, ticket_cost, user_id, row) VALUES (%s,%s,%s,%s,'
-                            '%s)', (seance_id, place, ticket_cost[0], user_id[0], row))
-                        conn.commit()
-                        flash('Вы успешно приобрели билет!')
-
-                    else:
-                        flash('Это место уже занято')
+            seance_id = seance[0]
+            print(seance_id)
+            cursor.execute('SELECT id FROM cinema_user WHERE login = %s', [session['login']])
+            user_id = cursor.fetchone()
+            print(user_id)
+            cursor.execute('SELECT ticket_cost FROM seance WHERE id = %s', (seance_id,))
+            ticket_cost = cursor.fetchone()
+            print(ticket_cost)
+            # cursor.execute(
+            #         'INSERT INTO ticket (seance_id, ticket_cost, user_id) VALUES (%s,%s,'
+            #         '%s)', (seance_id, ticket_cost[0], user_id[0],))
+            # conn.commit()
+            session['seance_id'] = seance_id
+            session['ticket_cost'] = ticket_cost[0]
+            session['user_id'] = user_id
+            session['title'] = title_value
+            session['date'] = date_value
+            session['time'] = time_value_str
+            session['hall'] = hall_value
+            session.modified = True
+            print(session['seance_id'])
+            print(session['ticket_cost'])
+            print(session['user_id'])
+            print(session['title'])
+            print(session['date'])
+            print(session['hall'])
+            flash('Вы успешно почти приобрели билет!')
+            return redirect(url_for('view.add_ticket2'))
 
         else:
             flash('Такого сеанса не существует, проверьте корректность введенных данных')
 
     return render_template('add_ticket.html', title_dict=title_dict, seance_date_dict=seance_date_dict,
-                           seance_time_dict=seance_time_dict, seance_hall_dict=seance_hall_dict, seance=seance,
-                           row_num=row_num, place_num=place_num)
+                           seance_time_dict=seance_time_dict, seance_hall_dict=seance_hall_dict, seance=seance)
+
+
+@view.route('/add_ticket2', methods=['GET', 'POST'])
+def add_ticket2():
+    conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute("SELECT row_num FROM hall WHERE id IN (SELECT hall FROM seance WHERE id = %s)",
+                   (session['seance_id'],))
+    place_row = cursor.fetchall()
+    row_num = place_row[0][0]
+    print(row_num)
+    cursor.execute("SELECT place_num FROM hall WHERE id IN (SELECT hall FROM seance WHERE id = %s)",
+                   (session['seance_id'],))
+    place_row = cursor.fetchall()
+    place_num = place_row[0][0]
+    print(place_num)
+
+    cursor.execute("SELECT row, place FROM ticket WHERE seance_id = %s",
+                   (session['seance_id'],))
+    zplace = cursor.fetchall()
+    zplace_len = len(zplace)
+
+    if request.method == "POST":
+        row = request.form['option_row']
+        place = request.form['option_place']
+
+        cursor.execute('SELECT row FROM ticket WHERE seance_id = %s', (session['seance_id'],))
+        seance_row = cursor.fetchone()
+        print("row", seance_row)
+        cursor.execute('SELECT place FROM ticket WHERE seance_id = %s', (session['seance_id'],))
+        seance_place = cursor.fetchone()
+        print("place", seance_place)
+
+        if (seance_row is None and seance_place is None) or (seance_row is not None and seance_place is None)\
+                        or (seance_row is None and seance_place is not None):
+            seance_row_x = 0
+            seance_place_x = 0
+            cursor.execute('SELECT id FROM cinema_user WHERE login = %s', [session['login']])
+            user_id = cursor.fetchone()
+            print(user_id)
+            cursor.execute('SELECT ticket_cost FROM seance WHERE id = %s', (session['seance_id'],))
+            ticket_cost = cursor.fetchone()
+            print(ticket_cost)
+            cursor.execute(
+                    'INSERT INTO ticket (seance_id, place, ticket_cost, user_id, row) VALUES (%s,%s,%s,%s,'
+                    '%s)', (session['seance_id'], place, ticket_cost[0], user_id[0], row))
+            conn.commit()
+
+        else:
+            seance_row_x = seance_row.count(int(row))
+            seance_place_x = seance_place.count(int(place))
+            print(seance_place_x, seance_row_x)
+
+            if seance_row_x == 0 and seance_place_x == 0:
+                cursor.execute('SELECT id FROM cinema_user WHERE login = %s', [session['login']])
+                user_id = cursor.fetchone()
+                print(user_id)
+                cursor.execute('SELECT ticket_cost FROM seance WHERE id = %s', (session['seance_id'],))
+                ticket_cost = cursor.fetchone()
+                print(ticket_cost)
+                cursor.execute(
+                        'INSERT INTO ticket (seance_id, place, ticket_cost, user_id, row) VALUES (%s,%s,%s,%s,'
+                        '%s)', (session['seance_id'], place, ticket_cost[0], user_id[0], row))
+                conn.commit()
+                flash('Вы успешно приобрели билет!')
+
+            else:
+                flash('Это место уже занято')
+
+    return render_template("add_ticket2.html", row_num=row_num, place_num=place_num,  zplace=zplace, zplace_len=zplace_len)
 
 
 @view.route('/del_seance', methods=['GET', 'POST'])
